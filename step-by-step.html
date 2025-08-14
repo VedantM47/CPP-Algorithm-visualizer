@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step-by-Step Execution - KEA Algorithm Visualizer</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/feature-pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <h1>KEA Algorithm Visualizer</h1>
+                    <span class="tagline">Interactive C++ Learning</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="algorithm-library.html" class="nav-link">Library</a>
+                <a href="code-editor.html" class="nav-link">Editor</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="feature-hero">
+            <div class="container">
+                <div class="feature-header">
+                    <div class="feature-icon-large">🎯</div>
+                    <h2>Step-by-Step Execution</h2>
+                    <p>Watch your code execute line by line with synchronized visual feedback</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="feature-content">
+            <div class="container">
+                <div class="content-grid">
+                    <div class="content-section">
+                        <h3>How It Works</h3>
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Write Your Code</h4>
+                                    <p>Input your C++ algorithm in our advanced code editor with syntax highlighting</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Start Execution</h4>
+                                    <p>Click run and watch as each line of code is highlighted during execution</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Visual Feedback</h4>
+                                    <p>See data structures change in real-time as your algorithm processes them</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="demo-section">
+                        <h3>Interactive Demo</h3>
+                        <div class="demo-container">
+                            <div class="demo-code">
+                                <div class="code-header">Bubble Sort - Step 3 of 12</div>
+                                <div class="code-lines">
+                                    <div class="code-line">for (int i = 0; i < n-1; i++) {</div>
+                                    <div class="code-line">    for (int j = 0; j < n-i-1; j++) {</div>
+                                    <div class="code-line current-line">        if (arr[j] > arr[j+1]) {</div>
+                                    <div class="code-line">            swap(arr[j], arr[j+1]);</div>
+                                    <div class="code-line">        }</div>
+                                    <div class="code-line">    }</div>
+                                    <div class="code-line">}</div>
+                                </div>
+                            </div>
+                            <div class="demo-visualization">
+                                <div class="array-visualization">
+                                    <div class="array-element comparing">64</div>
+                                    <div class="array-element comparing">34</div>
+                                    <div class="array-element">25</div>
+                                    <div class="array-element">12</div>
+                                    <div class="array-element">22</div>
+                                </div>
+                                <div class="execution-info">
+                                    <p><strong>Current Operation:</strong> Comparing arr[0] (64) with arr[1] (34)</p>
+                                    <p><strong>Variables:</strong> i = 0, j = 0, n = 5</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="demo-controls">
+                            <button class="demo-btn">⏮ Previous</button>
+                            <button class="demo-btn primary">▶ Play</button>
+                            <button class="demo-btn">⏭ Next</button>
+                            <button class="demo-btn secondary">Try Full Editor</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-showcase">
+                    <h3>Key Features</h3>
+                    <div class="showcase-grid">
+                        <div class="showcase-item">
+                            <div class="showcase-icon">🔍</div>
+                            <h4>Line-by-Line Tracking</h4>
+                            <p>See exactly which line of code is executing with real-time highlighting</p>
+                        </div>
+                        <div class="showcase-item">
+                            <div class="showcase-icon">📊</div>
+                            <h4>Variable Monitoring</h4>
+                            <p>Track variable values and changes throughout algorithm execution</p>
+                        </div>
+                        <div class="showcase-item">
+                            <div class="showcase-icon">⏯</div>
+                            <h4>Playback Controls</h4>
+                            <p>Play, pause, step forward/backward through your algorithm at your own pace</p>
+                        </div>
+                        <div class="showcase-item">
+                            <div class="showcase-icon">🎨</div>
+                            <h4>Visual Synchronization</h4>
+                            <p>Code execution perfectly synchronized with visual data structure changes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <h3>Ready to Start?</h3>
+                    <p>Experience step-by-step execution with your own C++ algorithms</p>
+                    <a href="code-editor.html" class="cta-button primary">Open Code Editor</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 KEA Algorithm Visualizer. Built for educational purposes.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Library - KEA Algorithm Visualizer</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/feature-pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <h1>KEA Algorithm Visualizer</h1>
+                    <span class="tagline">Interactive C++ Learning</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="step-by-step.html" class="nav-link">Step-by-Step</a>
+                <a href="code-editor.html" class="nav-link">Editor</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="feature-hero">
+            <div class="container">
+                <div class="feature-header">
+                    <div class="feature-icon-large">📖</div>
+                    <h2>Algorithm Library</h2>
+                    <p>Explore classic algorithms with ready-to-run examples and detailed explanations</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="feature-content">
+            <div class="container">
+                <div class="library-categories">
+                    <div class="category-tabs">
+                        <button class="tab-btn active" data-category="sorting">Sorting</button>
+                        <button class="tab-btn" data-category="searching">Searching</button>
+                        <button class="tab-btn" data-category="graph">Graph</button>
+                        <button class="tab-btn" data-category="dynamic">Dynamic Programming</button>
+                    </div>
+
+                    <div class="algorithms-grid" id="sorting">
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Bubble Sort</h4>
+                                <span class="complexity">O(n²)</span>
+                            </div>
+                            <p>Simple comparison-based sorting algorithm that repeatedly steps through the list</p>
+                            <div class="algorithm-preview">
+                                <div class="mini-bars">
+                                    <div class="mini-bar" style="height: 20px;"></div>
+                                    <div class="mini-bar" style="height: 35px;"></div>
+                                    <div class="mini-bar" style="height: 15px;"></div>
+                                    <div class="mini-bar" style="height: 40px;"></div>
+                                    <div class="mini-bar" style="height: 25px;"></div>
+                                </div>
+                            </div>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Quick Sort</h4>
+                                <span class="complexity">O(n log n)</span>
+                            </div>
+                            <p>Efficient divide-and-conquer algorithm that picks a pivot and partitions the array</p>
+                            <div class="algorithm-preview">
+                                <div class="mini-bars">
+                                    <div class="mini-bar" style="height: 30px;"></div>
+                                    <div class="mini-bar pivot" style="height: 25px;"></div>
+                                    <div class="mini-bar" style="height: 40px;"></div>
+                                    <div class="mini-bar" style="height: 15px;"></div>
+                                    <div class="mini-bar" style="height: 35px;"></div>
+                                </div>
+                            </div>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Merge Sort</h4>
+                                <span class="complexity">O(n log n)</span>
+                            </div>
+                            <p>Stable divide-and-conquer algorithm that divides array into halves and merges them</p>
+                            <div class="algorithm-preview">
+                                <div class="mini-bars">
+                                    <div class="mini-bar merging" style="height: 20px;"></div>
+                                    <div class="mini-bar merging" style="height: 30px;"></div>
+                                    <div class="mini-bar" style="height: 35px;"></div>
+                                    <div class="mini-bar" style="height: 25px;"></div>
+                                    <div class="mini-bar" style="height: 40px;"></div>
+                                </div>
+                            </div>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Selection Sort</h4>
+                                <span class="complexity">O(n²)</span>
+                            </div>
+                            <p>Simple algorithm that finds minimum element and places it at the beginning</p>
+                            <div class="algorithm-preview">
+                                <div class="mini-bars">
+                                    <div class="mini-bar selected" style="height: 15px;"></div>
+                                    <div class="mini-bar" style="height: 35px;"></div>
+                                    <div class="mini-bar" style="height: 25px;"></div>
+                                    <div class="mini-bar" style="height: 40px;"></div>
+                                    <div class="mini-bar" style="height: 20px;"></div>
+                                </div>
+                            </div>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Insertion Sort</h4>
+                                <span class="complexity">O(n²)</span>
+                            </div>
+                            <p>Builds sorted array one element at a time by inserting elements in correct position</p>
+                            <div class="algorithm-preview">
+                                <div class="mini-bars">
+                                    <div class="mini-bar sorted" style="height: 20px;"></div>
+                                    <div class="mini-bar sorted" style="height: 25px;"></div>
+                                    <div class="mini-bar inserting" style="height: 35px;"></div>
+                                    <div class="mini-bar" style="height: 30px;"></div>
+                                    <div class="mini-bar" style="height: 40px;"></div>
+                                </div>
+                            </div>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Heap Sort</h4>
+                                <span class="complexity">O(n log n)</span>
+                            </div>
+                            <p>Uses binary heap data structure to sort elements efficiently</p>
+                            <div class="algorithm-preview">
+                                <div class="mini-bars">
+                                    <div class="mini-bar heap" style="height: 40px;"></div>
+                                    <div class="mini-bar heap" style="height: 35px;"></div>
+                                    <div class="mini-bar heap" style="height: 30px;"></div>
+                                    <div class="mini-bar" style="height: 25px;"></div>
+                                    <div class="mini-bar" style="height: 20px;"></div>
+                                </div>
+                            </div>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="algorithms-grid hidden" id="searching">
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Linear Search</h4>
+                                <span class="complexity">O(n)</span>
+                            </div>
+                            <p>Sequential search through array elements one by one</p>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Binary Search</h4>
+                                <span class="complexity">O(log n)</span>
+                            </div>
+                            <p>Efficient search in sorted arrays by dividing search space in half</p>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="algorithms-grid hidden" id="graph">
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Breadth-First Search</h4>
+                                <span class="complexity">O(V + E)</span>
+                            </div>
+                            <p>Explores graph level by level using a queue data structure</p>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Depth-First Search</h4>
+                                <span class="complexity">O(V + E)</span>
+                            </div>
+                            <p>Explores graph by going as deep as possible before backtracking</p>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="algorithms-grid hidden" id="dynamic">
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Fibonacci Sequence</h4>
+                                <span class="complexity">O(n)</span>
+                            </div>
+                            <p>Classic dynamic programming example with memoization</p>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+
+                        <div class="algorithm-card">
+                            <div class="algorithm-header">
+                                <h4>Longest Common Subsequence</h4>
+                                <span class="complexity">O(mn)</span>
+                            </div>
+                            <p>Find longest subsequence common to two sequences</p>
+                            <div class="algorithm-actions">
+                                <button class="action-btn primary">Visualize</button>
+                                <button class="action-btn secondary">View Code</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <h3>Want to Add Your Own Algorithm?</h3>
+                    <p>Use our code editor to input and visualize your custom C++ algorithms</p>
+                    <a href="code-editor.html" class="cta-button primary">Open Code Editor</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 KEA Algorithm Visualizer. Built for educational purposes.</p>
+        </div>
+    </footer>
+
+    <script src="scripts/library.js"></script>
+</body>
+</html>

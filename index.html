@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEA Algorithm Visualizer - Learn C++ Algorithms Interactively</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>KEA Algorithm Visualizer</h1>
+                <span class="tagline">Interactive C++ Learning</span>
+            </div>
+            <nav class="nav">
+                <a href="#about" class="nav-link">About</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#help" class="nav-link">Help</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h2 class="hero-title">Master C++ Algorithms Through Visualization</h2>
+                    <p class="hero-description">
+                        Step through algorithms line by line, watch data structures transform in real-time, 
+                        and understand how classic algorithms work with interactive visualizations.
+                    </p>
+                    
+                    <div class="cta-buttons">
+                        <button class="cta-button primary" id="inputCodeBtn">
+                            <div class="button-content">
+                                <span class="button-icon">⚡</span>
+                                <div class="button-text">
+                                    <span class="button-title">Input Your Code</span>
+                                    <span class="button-subtitle">Write and visualize custom C++ algorithms</span>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button class="cta-button secondary" id="standardAlgorithmsBtn">
+                            <div class="button-content">
+                                <span class="button-icon">📚</span>
+                                <div class="button-text">
+                                    <span class="button-title">Standard Algorithms</span>
+                                    <span class="button-subtitle">Explore classic sorting, searching & more</span>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="algorithm-preview">
+                        <div class="code-snippet">
+                            <div class="code-header">Bubble Sort Example</div>
+                            <div class="code-lines">
+                                <div class="code-line">for (int i = 0; i < n-1; i++) {</div>
+                                <div class="code-line highlighted">    for (int j = 0; j < n-i-1; j++) {</div>
+                                <div class="code-line">        if (arr[j] > arr[j+1]) {</div>
+                                <div class="code-line">            swap(arr[j], arr[j+1]);</div>
+                            </div>
+                        </div>
+                        <div class="visualization-preview">
+                            <div class="array-bars">
+                                <div class="bar" style="height: 40px;"></div>
+                                <div class="bar active" style="height: 80px;"></div>
+                                <div class="bar active" style="height: 60px;"></div>
+                                <div class="bar" style="height: 100px;"></div>
+                                <div class="bar" style="height: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <h3 class="section-title">Why Choose KEA Algorithm Visualizer?</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h4>Step-by-Step Execution</h4>
+                        <p>Watch your code execute line by line with synchronized visual feedback</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h4>Custom Code Input</h4>
+                        <p>Write your own C++ algorithms and see them visualized instantly</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📖</div>
+                        <h4>Algorithm Library</h4>
+                        <p>Explore classic algorithms with ready-to-run examples</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h4>Browser-Based</h4>
+                        <p>No installation required - runs entirely in your web browser</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 KEA Algorithm Visualizer. Built for educational purposes.</p>
+        </div>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>

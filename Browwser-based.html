@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser-Based - KEA Algorithm Visualizer</title>
+    <link rel="stylesheet" href="styles/feature-pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>KEA Algorithm Visualizer</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="step-by-step.html">Step-by-Step</a>
+                <a href="algorithm-library.html">Library</a>
+                <a href="code-editor.html">Editor</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="hero-section">
+            <div class="hero-content">
+                <div class="feature-icon browser-icon">⚡</div>
+                <h1>Browser-Based Algorithm Visualization</h1>
+                <p class="hero-subtitle">No installation required - runs entirely in your web browser with full C++ support</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🚀</div>
+                    <h3>Instant Access</h3>
+                    <p>Start visualizing algorithms immediately without downloads, installations, or setup procedures.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🌐</div>
+                    <h3>Cross-Platform</h3>
+                    <p>Works seamlessly on Windows, Mac, Linux, tablets, and smartphones with consistent experience.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔄</div>
+                    <h3>Always Updated</h3>
+                    <p>Latest features and improvements are available instantly without manual updates.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">💾</div>
+                    <h3>Zero Storage</h3>
+                    <p>No local disk space required - everything runs in your browser's memory.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔗</div>
+                    <h3>Easy Sharing</h3>
+                    <p>Share algorithm visualizations with classmates and teachers through simple links.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔒</div>
+                    <h3>Secure Sandbox</h3>
+                    <p>Runs in browser security sandbox with no system-level access required.</p>
+                </div>
+            </div>
+
+            <div class="tech-section">
+                <h2>Technical Implementation</h2>
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <h4>WebAssembly Integration</h4>
+                        <p>C++ code compilation and execution directly in the browser using WebAssembly for near-native performance.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>HTML5 Canvas Rendering</h4>
+                        <p>Smooth, hardware-accelerated algorithm visualizations using modern HTML5 Canvas APIs.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Progressive Web App</h4>
+                        <p>Offline capabilities and app-like experience with service worker caching.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Local Storage</h4>
+                        <p>Save your code, preferences, and progress locally without server dependencies.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2>Live Browser Demo</h2>
+                <div class="demo-container">
+                    <div class="demo-code">
+                        <h4>C++ Code Execution</h4>
+                        <pre><code>// Bubble Sort Algorithm
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n-i-1; j++) {
+            if (arr[j] > arr[j+1]) {
+                swap(arr[j], arr[j+1]);
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+                    <div class="demo-visual">
+                        <h4>Real-time Visualization</h4>
+                        <div class="demo-bars">
+                            <div class="demo-bar" style="height: 60px;"></div>
+                            <div class="demo-bar" style="height: 40px;"></div>
+                            <div class="demo-bar" style="height: 80px;"></div>
+                            <div class="demo-bar" style="height: 30px;"></div>
+                            <div class="demo-bar" style="height: 70px;"></div>
+                        </div>
+                        <p class="demo-status">Running in your browser - no external tools needed!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h2>Ready to Start?</h2>
+                <p>Experience the power of browser-based algorithm visualization</p>
+                <div class="cta-buttons">
+                    <a href="code-editor.html" class="cta-button primary">Try Code Editor</a>
+                    <a href="algorithm-library.html" class="cta-button secondary">Browse Algorithms</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Animate demo bars
+        function animateDemoBars() {
+            const bars = document.querySelectorAll('.demo-bar');
+            let currentIndex = 0;
+
+            function highlightNext() {
+                bars.forEach(bar => bar.classList.remove('active'));
+                
+                if (currentIndex < bars.length - 1) {
+                    bars[currentIndex].classList.add('active');
+                    bars[currentIndex + 1].classList.add('active');
+                }
+
+                currentIndex = (currentIndex + 1) % (bars.length - 1);
+                setTimeout(highlightNext, 1500);
+            }
+
+            setTimeout(highlightNext, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', animateDemoBars);
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor - KEA Algorithm Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <link rel="stylesheet" href="editor-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>C++ Algorithm Visualizer</h1>
+            <p>Write your C++ code and watch algorithms come to life with step-by-step visualization</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Code Editor</h2>
+                    <div class="controls">
+                        <button class="btn btn-primary" id="runBtn">▶ Run Code</button>
+                        <button class="btn btn-secondary" id="resetBtn">↻ Reset</button>
+                        <button class="btn btn-secondary" id="stepBtn">⏭ Step</button>
+                    </div>
+                </div>
+                <div class="editor-container">
+                    <textarea id="codeEditor">#include <iostream>
+#include <vector>
+#include <algorithm>
+
+int main() {
+    // Example: Bubble Sort Algorithm
+    std::vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    std::cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << std::endl;
+    
+    // Bubble Sort
+    for(int i = 0; i < n-1; i++) {
+        for(int j = 0; j < n-i-1; j++) {
+            if(arr[j] > arr[j+1]) {
+                // Swap elements
+                std::swap(arr[j], arr[j+1]);
+                
+                // Print current state
+                std::cout << "Step " << (i*n + j + 1) << ": ";
+                for(int k = 0; k < n; k++) {
+                    std::cout << arr[k] << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
+    }
+    
+    std::cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << std::endl;
+    
+    return 0;
+}</textarea>
+                </div>
+            </div>
+            
+            <div class="visualization-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Visualization & Output</h2>
+                    <div class="controls">
+                        <select id="algorithmSelect" class="algorithm-select">
+                            <option value="auto">Auto-detect</option>
+                            <option value="bubble">Bubble Sort</option>
+                            <option value="selection">Selection Sort</option>
+                            <option value="insertion">Insertion Sort</option>
+                            <option value="merge">Merge Sort</option>
+                            <option value="quick">Quick Sort</option>
+                        </select>
+                        <button class="btn btn-secondary" id="customizeBtn">⚙ Customize</button>
+                        <button class="btn btn-secondary" id="clearBtn">Clear</button>
+                    </div>
+                </div>
+                <div class="visualization-container">
+                    <div class="canvas-area">
+                        <canvas id="visualizationCanvas" width="600" height="300"></canvas>
+                        <div class="canvas-overlay">
+                            <div class="algorithm-info" id="algorithmInfo">
+                                <span class="algorithm-name">Ready for Visualization</span>
+                                <span class="step-counter">Step: 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Added comprehensive playback controls -->
+                    <div class="playback-controls">
+                        <div class="control-group">
+                            <button class="control-btn" id="stepBackBtn" title="Step Backward (←)">⏮</button>
+                            <button class="control-btn primary" id="playBtn" title="Play (Space)">▶</button>
+                            <button class="control-btn" id="pauseBtn" title="Pause (Space)">⏸</button>
+                            <button class="control-btn" id="stepForwardBtn" title="Step Forward (→)">⏭</button>
+                            <button class="control-btn" id="resetVisualizationBtn" title="Reset (R)">↻</button>
+                        </div>
+                        
+                        <div class="timeline-container">
+                            <span class="timeline-label">Timeline:</span>
+                            <input type="range" id="timelineSlider" class="timeline-slider" min="0" max="100" value="0" placeholder="0">
+                            <span class="timeline-info" id="timelineInfo">0 / 0</span>
+                        </div>
+                        
+                        <div class="speed-control">
+                            <label>Speed:</label>
+                            <input type="range" id="speedSlider" min="1" max="10" value="5" placeholder="0">
+                            <span id="speedValue">5x</span>
+                        </div>
+                    </div>
+                    
+                    <div class="output-section">
+                        <div class="output-header">
+                            <h3>Console Output</h3>
+                            <div class="output-controls">
+                                <button class="btn btn-small" id="exportBtn">📄 Export</button>
+                                <button class="btn btn-small" id="fullscreenBtn">⛶ Fullscreen</button>
+                            </div>
+                        </div>
+                        <div class="output-area" id="outputArea">
+                            <div style="color: #64748b; font-style: italic;">
+                                Click "Run Code" to execute your C++ program and see the output here.
+                                <br>
+                                The visualization above will show step-by-step execution of your algorithm.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-text" id="statusText">Ready to compile and run C++ code</div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="window.location.href='index.html'">🏠 Home</button>
+                <button class="nav-btn" onclick="window.location.href='algorithm-library.html'">📚 Standard Algorithms</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Added customization modal -->
+    <div id="customizeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Customize Visualization</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="arraySize">Array Size:</label>
+                    <input type="range" id="arraySize" min="5" max="20" value="7">
+                    <span id="arraySizeValue">7</span>
+                </div>
+                <div class="form-group">
+                    <label for="arrayValues">Array Values (comma-separated):</label>
+                    <input type="text" id="arrayValues" value="64, 34, 25, 12, 22, 11, 90" placeholder="e.g., 64, 34, 25, 12, 22, 11, 90">
+                </div>
+                <div class="form-group">
+                    <label>Quick Presets:</label>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-preset="random">Random</button>
+                        <button class="preset-btn" data-preset="sorted">Sorted</button>
+                        <button class="preset-btn" data-preset="reverse">Reverse</button>
+                        <button class="preset-btn" data-preset="nearly">Nearly Sorted</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelCustomize">Cancel</button>
+                <button class="btn btn-primary" id="applyCustomize">Apply</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="editor-script.js"></script>
+</body>
+</html>
