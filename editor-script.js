@@ -45,11 +45,23 @@ class CodeAnalyzer {
       { name: "merge", patterns: ["merge", "Merge Sort", "mergeSort", "merge$$.*left.*right$$"] },
       { name: "quick", patterns: ["quick", "Quick Sort", "quickSort", "partition", "pivot"] },
       { name: "heap", patterns: ["heap", "Heap Sort", "heapify", "buildHeap"] },
-      { name: "linear_search", patterns: ["linear.*search", "Linear Search", "for.*arr\\[i\\].*==.*target"] },
+      {
+        name: "linear_search",
+        patterns: ["linear.*search", "Linear Search", "for.*arr\\[i\\].*==.*target", "linearSearch"],
+      },
       {
         name: "binary_search",
-        patterns: ["binary.*search", "Binary Search", "while.*left.*<=.*right", "mid.*=.*(left.*right)"],
+        patterns: [
+          "binary.*search",
+          "Binary Search",
+          "while.*left.*<=.*right",
+          "mid.*=.*(left.*right)",
+          "binarySearch",
+        ],
       },
+      { name: "bfs", patterns: ["BFS", "breadth.*first", "Breadth-First Search", "queue<int>", "q.push", "q.front"] },
+      { name: "dfs", patterns: ["DFS", "depth.*first", "Depth-First Search", "DFSUtil", "visited\\[vertex\\]"] },
+      { name: "fibonacci", patterns: ["fibonacci", "Fibonacci", "fib$$n-1$$", "fib$$n-2$$"] },
     ]
 
     for (const algo of algorithms) {
@@ -269,6 +281,10 @@ class AnimationEngine {
       this.renderTree(frameData)
     } else if (frameData.type === "graph") {
       this.renderGraph(frameData)
+    } else if (frameData.type === "search") {
+      this.renderSearch(frameData)
+    } else if (frameData.type === "binary_search") {
+      this.renderSearch(frameData)
     }
 
     if (frameData.codeLine !== undefined) {
@@ -338,16 +354,139 @@ class AnimationEngine {
     )
   }
 
-  renderGraph(frameData) {
-    // Graph rendering implementation
-    this.ctx.fillStyle = "#64748b"
-    this.ctx.font = "14px Inter"
+  renderSearch(frameData) {
+    const { array, currentIndex, target, found, left, right, mid } = frameData
+    const barWidth = Math.min(60, (this.canvas.width * 0.8) / array.length)
+    const barSpacing = 5
+    const totalWidth = array.length * barWidth + (array.length - 1) * barSpacing
+    const startX = (this.canvas.width - totalWidth) / 2
+
+    // Clear canvas
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+
+    // Draw array bars
+    array.forEach((value, index) => {
+      const x = startX + index * (barWidth + barSpacing)
+      const barHeight = (value / Math.max(...array)) * (this.canvas.height * 0.6)
+      const y = this.canvas.height * 0.8 - barHeight
+
+      // Color coding for search visualization
+      if (frameData.type === "binary_search") {
+        if (index === mid) {
+          this.ctx.fillStyle = found ? "#10b981" : "#f59e0b" // Green if found, orange if checking
+        } else if (left !== undefined && right !== undefined && index >= left && index <= right) {
+          this.ctx.fillStyle = "#3b82f6" // Blue for search range
+        } else {
+          this.ctx.fillStyle = "#64748b" // Gray for out of range
+        }
+      } else {
+        // Linear search coloring
+        if (index === currentIndex) {
+          this.ctx.fillStyle = found ? "#10b981" : "#f59e0b" // Green if found, orange if checking
+        } else if (index < currentIndex) {
+          this.ctx.fillStyle = "#ef4444" // Red for already checked
+        } else {
+          this.ctx.fillStyle = "#64748b" // Gray for not yet checked
+        }
+      }
+
+      this.ctx.fillRect(x, y, barWidth, barHeight)
+
+      // Draw value labels
+      this.ctx.fillStyle = "#ffffff"
+      this.ctx.font = "12px Inter"
+      this.ctx.textAlign = "center"
+      this.ctx.fillText(value.toString(), x + barWidth / 2, y - 5)
+
+      // Draw index labels
+      this.ctx.fillStyle = "#94a3b8"
+      this.ctx.fillText(index.toString(), x + barWidth / 2, this.canvas.height * 0.9)
+    })
+
+    // Draw target indicator
+    this.ctx.fillStyle = "#ffffff"
+    this.ctx.font = "16px Inter"
     this.ctx.textAlign = "center"
-    this.ctx.fillText(
-      "Graph visualization coming soon...",
-      this.canvas.width / 2 / window.devicePixelRatio,
-      this.canvas.height / 2 / window.devicePixelRatio,
-    )
+    this.ctx.fillText(`Target: ${target}`, this.canvas.width / 2, 30)
+  }
+
+  renderGraph(frameData) {
+    const { graph, visited, queue, current, traversalOrder } = frameData
+
+    // Clear canvas
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+
+    // Simple graph layout - arrange vertices in a circle
+    const centerX = this.canvas.width / 2
+    const centerY = this.canvas.height / 2
+    const radius = Math.min(this.canvas.width, this.canvas.height) * 0.3
+    const vertexPositions = []
+
+    // Calculate vertex positions
+    for (let i = 0; i < graph.length; i++) {
+      const angle = (2 * Math.PI * i) / graph.length
+      vertexPositions.push({
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
+      })
+    }
+
+    // Draw edges
+    this.ctx.strokeStyle = "#64748b"
+    this.ctx.lineWidth = 2
+    for (let i = 0; i < graph.length; i++) {
+      for (const neighbor of graph[i]) {
+        if (i < neighbor) {
+          // Draw each edge only once
+          this.ctx.beginPath()
+          this.ctx.moveTo(vertexPositions[i].x, vertexPositions[i].y)
+          this.ctx.lineTo(vertexPositions[neighbor].x, vertexPositions[neighbor].y)
+          this.ctx.stroke()
+        }
+      }
+    }
+
+    // Draw vertices
+    for (let i = 0; i < graph.length; i++) {
+      const pos = vertexPositions[i]
+
+      // Color coding
+      if (i === current) {
+        this.ctx.fillStyle = "#f59e0b" // Orange for current
+      } else if (visited[i]) {
+        this.ctx.fillStyle = "#10b981" // Green for visited
+      } else if (queue.includes(i)) {
+        this.ctx.fillStyle = "#3b82f6" // Blue for in queue
+      } else {
+        this.ctx.fillStyle = "#64748b" // Gray for unvisited
+      }
+
+      // Draw vertex circle
+      this.ctx.beginPath()
+      this.ctx.arc(pos.x, pos.y, 20, 0, 2 * Math.PI)
+      this.ctx.fill()
+
+      // Draw vertex label
+      this.ctx.fillStyle = "#ffffff"
+      this.ctx.font = "14px Inter"
+      this.ctx.textAlign = "center"
+      this.ctx.fillText(i.toString(), pos.x, pos.y + 5)
+    }
+
+    // Draw traversal order
+    if (traversalOrder.length > 0) {
+      this.ctx.fillStyle = "#ffffff"
+      this.ctx.font = "16px Inter"
+      this.ctx.textAlign = "center"
+      this.ctx.fillText(`Traversal: ${traversalOrder.join(" → ")}`, centerX, 30)
+    }
+
+    // Draw queue status
+    if (queue.length > 0) {
+      this.ctx.fillStyle = "#94a3b8"
+      this.ctx.font = "14px Inter"
+      this.ctx.fillText(`Queue: [${queue.join(", ")}]`, centerX, this.canvas.height - 30)
+    }
   }
 
   clear() {
@@ -890,6 +1029,252 @@ class SortingVisualizer {
 
     return frames
   }
+
+  generateLinearSearchFrames(array, target, codeLines) {
+    const frames = []
+
+    for (let i = 0; i < array.length; i++) {
+      frames.push({
+        type: "search",
+        array: [...array],
+        currentIndex: i,
+        target: target,
+        found: array[i] === target,
+        step: `Checking index ${i}: ${array[i]} ${array[i] === target ? "== " + target + " (Found!)" : "!= " + target}`,
+        codeLine: i < codeLines.length ? codeLines[i] : null,
+      })
+
+      if (array[i] === target) {
+        frames.push({
+          type: "search",
+          array: [...array],
+          currentIndex: i,
+          target: target,
+          found: true,
+          completed: true,
+          step: `Element ${target} found at index ${i}`,
+          codeLine: null,
+        })
+        break
+      }
+    }
+
+    if (frames.length === 0 || !frames[frames.length - 1].found) {
+      frames.push({
+        type: "search",
+        array: [...array],
+        currentIndex: -1,
+        target: target,
+        found: false,
+        completed: true,
+        step: `Element ${target} not found in array`,
+        codeLine: null,
+      })
+    }
+
+    return frames
+  }
+
+  generateBinarySearchFrames(array, target, codeLines) {
+    const frames = []
+    let left = 0
+    let right = array.length - 1
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2)
+
+      frames.push({
+        type: "binary_search",
+        array: [...array],
+        left: left,
+        right: right,
+        mid: mid,
+        target: target,
+        step: `Checking middle element at index ${mid}: ${array[mid]}`,
+        codeLine: frames.length < codeLines.length ? codeLines[frames.length] : null,
+      })
+
+      if (array[mid] === target) {
+        frames.push({
+          type: "binary_search",
+          array: [...array],
+          left: left,
+          right: right,
+          mid: mid,
+          target: target,
+          found: true,
+          completed: true,
+          step: `Element ${target} found at index ${mid}`,
+          codeLine: null,
+        })
+        break
+      } else if (array[mid] < target) {
+        left = mid + 1
+        frames.push({
+          type: "binary_search",
+          array: [...array],
+          left: left,
+          right: right,
+          mid: -1,
+          target: target,
+          step: `${array[mid]} < ${target}, search right half`,
+          codeLine: null,
+        })
+      } else {
+        right = mid - 1
+        frames.push({
+          type: "binary_search",
+          array: [...array],
+          left: left,
+          right: right,
+          mid: -1,
+          target: target,
+          step: `${array[mid]} > ${target}, search left half`,
+          codeLine: null,
+        })
+      }
+    }
+
+    if (frames.length === 0 || !frames[frames.length - 1].found) {
+      frames.push({
+        type: "binary_search",
+        array: [...array],
+        left: left,
+        right: right,
+        mid: -1,
+        target: target,
+        found: false,
+        completed: true,
+        step: `Element ${target} not found in array`,
+        codeLine: null,
+      })
+    }
+
+    return frames
+  }
+
+  generateBFSFrames(graph, start, codeLines) {
+    const frames = []
+    const visited = new Array(graph.length).fill(false)
+    const queue = [start]
+    const traversalOrder = []
+
+    visited[start] = true
+
+    frames.push({
+      type: "graph",
+      graph: graph,
+      visited: [...visited],
+      queue: [...queue],
+      current: start,
+      traversalOrder: [...traversalOrder],
+      step: `Starting BFS from vertex ${start}`,
+      codeLine: 0,
+    })
+
+    while (queue.length > 0) {
+      const vertex = queue.shift()
+      traversalOrder.push(vertex)
+
+      frames.push({
+        type: "graph",
+        graph: graph,
+        visited: [...visited],
+        queue: [...queue],
+        current: vertex,
+        traversalOrder: [...traversalOrder],
+        step: `Visiting vertex ${vertex}`,
+        codeLine: frames.length < codeLines.length ? codeLines[frames.length] : null,
+      })
+
+      for (const neighbor of graph[vertex]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true
+          queue.push(neighbor)
+
+          frames.push({
+            type: "graph",
+            graph: graph,
+            visited: [...visited],
+            queue: [...queue],
+            current: vertex,
+            traversalOrder: [...traversalOrder],
+            step: `Added vertex ${neighbor} to queue`,
+            codeLine: null,
+          })
+        }
+      }
+    }
+
+    frames.push({
+      type: "graph",
+      graph: graph,
+      visited: [...visited],
+      queue: [],
+      current: -1,
+      traversalOrder: [...traversalOrder],
+      completed: true,
+      step: `BFS completed. Traversal order: ${traversalOrder.join(" → ")}`,
+      codeLine: null,
+    })
+
+    return frames
+  }
+
+  generateDFSFrames(graph, start, codeLines) {
+    const frames = []
+    const visited = new Array(graph.length).fill(false)
+    const traversalOrder = []
+
+    const dfsUtil = (vertex) => {
+      visited[vertex] = true
+      traversalOrder.push(vertex)
+
+      frames.push({
+        type: "graph",
+        graph: graph,
+        visited: [...visited],
+        queue: [],
+        current: vertex,
+        traversalOrder: [...traversalOrder],
+        step: `Visiting vertex ${vertex}`,
+        codeLine: frames.length < codeLines.length ? codeLines[frames.length] : null,
+      })
+
+      for (const neighbor of graph[vertex]) {
+        if (!visited[neighbor]) {
+          dfsUtil(neighbor)
+        }
+      }
+    }
+
+    frames.push({
+      type: "graph",
+      graph: graph,
+      visited: [...visited],
+      queue: [],
+      current: start,
+      traversalOrder: [...traversalOrder],
+      step: `Starting DFS from vertex ${start}`,
+      codeLine: 0,
+    })
+
+    dfsUtil(start)
+
+    frames.push({
+      type: "graph",
+      graph: graph,
+      visited: [...visited],
+      queue: [],
+      current: -1,
+      traversalOrder: [...traversalOrder],
+      completed: true,
+      step: `DFS completed. Traversal order: ${traversalOrder.join(" → ")}`,
+      codeLine: null,
+    })
+
+    return frames
+  }
 }
 
 // Initialize animation engine
@@ -931,7 +1316,7 @@ const exportBtn = document.getElementById("exportBtn")
 const fullscreenBtn = document.getElementById("fullscreenBtn")
 
 let isRunning = false
-let currentStep = 0
+const currentStep = 0
 let customArray = [64, 34, 25, 12, 22, 11, 90]
 
 playBtn.addEventListener("click", () => {
@@ -1179,12 +1564,29 @@ function simulateExecution(code) {
           frames = sortingVisualizer.generateQuickSortFrames(testArray, codeLines)
           simulateSortingOutput("Quick Sort", testArray)
           break
+        case "linear_search":
+          const searchTarget = extractSearchTarget(code) || 22
+          frames = sortingVisualizer.generateLinearSearchFrames(testArray, searchTarget, codeLines)
+          simulateSearchOutput("Linear Search", testArray, searchTarget)
+          break
+        case "binary_search":
+          const binaryTarget = extractSearchTarget(code) || 22
+          const sortedArray = [...testArray].sort((a, b) => a - b)
+          frames = sortingVisualizer.generateBinarySearchFrames(sortedArray, binaryTarget, codeLines)
+          simulateSearchOutput("Binary Search", sortedArray, binaryTarget)
+          break
+        case "bfs":
+          const bfsGraph = extractGraphData(code) || [[1, 2], [0, 3, 4], [0, 5], [1], [1, 5], [2, 4]]
+          frames = sortingVisualizer.generateBFSFrames(bfsGraph, 0, codeLines)
+          simulateGraphOutput("BFS", bfsGraph, 0)
+          break
+        case "dfs":
+          const dfsGraph = extractGraphData(code) || [[1, 2], [0, 3, 4], [0, 5], [1], [1, 5], [2, 4]]
+          frames = sortingVisualizer.generateDFSFrames(dfsGraph, 0, codeLines)
+          simulateGraphOutput("DFS", dfsGraph, 0)
+          break
         default:
-          addOutput("Program output:", "#e2e8f0")
-          addOutput("Hello, Algorithm Visualizer!", "#e2e8f0")
-          if (analysis.arrayData) {
-            addOutput(`Detected array: [${analysis.arrayData.join(", ")}]`, "#10b981")
-          }
+          simulateGeneralCodeExecution(code, analysis)
       }
 
       if (frames.length > 0) {
@@ -1202,58 +1604,158 @@ function simulateExecution(code) {
   }, 1500)
 }
 
+function simulateGeneralCodeExecution(code, analysis) {
+  addOutput("Program output:", "#e2e8f0")
+
+  // Extract and simulate cout statements
+  const coutMatches = code.match(/cout\s*<<[^;]+;/g) || []
+  const printfMatches = code.match(/printf\s*$$[^)]+$$;/g) || []
+
+  let hasOutput = false
+
+  // Process cout statements
+  if (coutMatches.length > 0) {
+    coutMatches.forEach((match) => {
+      const output = match.replace(/cout\s*<<\s*/, "").replace(/;$/, "")
+
+      // Handle common cout patterns
+      if (output.includes('"')) {
+        const stringMatch = output.match(/"([^"]+)"/g)
+        if (stringMatch) {
+          stringMatch.forEach((str) => {
+            const cleanStr = str.replace(/"/g, "")
+            if (cleanStr.trim() && cleanStr !== "Program output") {
+              addOutput(cleanStr, "#e2e8f0")
+              hasOutput = true
+            }
+          })
+        }
+      }
+
+      // Handle variable outputs
+      if (output.includes("result") || output.includes("index") || output.includes("found")) {
+        addOutput("Result: [computed value]", "#10b981")
+        hasOutput = true
+      }
+    })
+  }
+
+  // Process printf statements
+  if (printfMatches.length > 0) {
+    printfMatches.forEach((match) => {
+      const formatMatch = match.match(/printf\s*\(\s*"([^"]+)"/)
+      if (formatMatch) {
+        const formatStr = formatMatch[1].replace(/%d|%s|%f/g, "[value]")
+        if (formatStr.trim()) {
+          addOutput(formatStr, "#e2e8f0")
+          hasOutput = true
+        }
+      }
+    })
+  }
+
+  if (!hasOutput) {
+    if (code.includes("fibonacci") || code.includes("Fibonacci")) {
+      addOutput("Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34...", "#10b981")
+    } else if (code.includes("factorial")) {
+      addOutput("Factorial calculation completed", "#10b981")
+    } else if (code.includes("for") || code.includes("while") || code.includes("if")) {
+      addOutput("Code contains logic but no output statements", "#f59e0b")
+      addOutput("Add cout << statements to see program output", "#64748b")
+    } else {
+      addOutput("No output statements detected", "#64748b")
+    }
+  }
+
+  if (analysis.arrayData && analysis.arrayData.length > 0) {
+    addOutput(`Detected array: [${analysis.arrayData.join(", ")}]`, "#10b981")
+  }
+}
+
+function extractOutputContent(coutStatement) {
+  const stringMatches = coutStatement.match(/"([^"]*)"/g) || []
+  let content = ""
+
+  if (stringMatches.length > 0) {
+    content = stringMatches.map((str) => str.replace(/"/g, "")).join("")
+  }
+
+  // Handle endl and newlines
+  if (coutStatement.includes("endl") || coutStatement.includes("\\n")) {
+    content += "\n"
+  }
+
+  // Extract variable names if no string literals
+  if (!content) {
+    const varMatches = coutStatement.match(/<<\s*([a-zA-Z_][a-zA-Z0-9_]*)/g) || []
+    if (varMatches.length > 0) {
+      const vars = varMatches.map((v) => v.replace("<<", "").trim())
+      content = `[Variables: ${vars.join(", ")}]`
+    }
+  }
+
+  return content || null
+}
+
+function extractPrintfContent(printfStatement) {
+  const stringMatch = printfStatement.match(/printf\s*\(\s*"([^"]*)"/)
+  if (stringMatch) {
+    return stringMatch[1].replace(/\\n/g, "\n")
+  }
+  return "printf output"
+}
+
 function extractCodeLines(code) {
   const lines = code.split("\n")
   const codeLines = {}
 
   lines.forEach((line, index) => {
-    const trimmedLine = line.trim().toLowerCase()
-
-    if (trimmedLine.includes("swap") || (trimmedLine.includes("arr[j]") && trimmedLine.includes("arr[j+1]"))) {
-      codeLines.swap = index
-    } else if (trimmedLine.includes("if") && (trimmedLine.includes(">") || trimmedLine.includes("<"))) {
-      codeLines.compare = index
-    } else if (trimmedLine.includes("for") && trimmedLine.includes("i")) {
+    if (line.includes("// init")) {
       codeLines.init = index
-    } else if (trimmedLine.includes("min") && trimmedLine.includes("=")) {
+    } else if (line.includes("// compare")) {
+      codeLines.compare = index
+    } else if (line.includes("// swap")) {
+      codeLines.swap = index
+    } else if (line.includes("// sorted")) {
+      codeLines.sorted = index
+    } else if (line.includes("// complete")) {
+      codeLines.complete = index
+    } else if (line.includes("// findMin")) {
       codeLines.findMin = index
-    } else if (trimmedLine.includes("key = arr[i]")) {
-      codeLines.insert = index
-    } else if (trimmedLine.includes("arr[j+1] = arr[j]")) {
-      codeLines.shift = index
-    } else if (trimmedLine.includes("arr[j+1] = key")) {
-      codeLines.place = index
-    } else if (trimmedLine.includes("mergeSort")) {
+    } else if (line.includes("// newMin")) {
+      codeLines.newMin = index
+    } else if (line.includes("// divide")) {
       codeLines.divide = index
-    } else if (trimmedLine.includes("pivot = arr[high]")) {
-      codeLines.pivot = index
-    } else if (trimmedLine.includes("copy")) {
+    } else if (line.includes("// place")) {
+      codeLines.place = index
+    } else if (line.includes("// copy")) {
       codeLines.copy = index
+    } else if (line.includes("// pivot")) {
+      codeLines.pivot = index
     }
   })
 
   return codeLines
 }
 
-editor.on("change", (cm, change) => {
-  // Debounce analysis to avoid excessive calls
-  clearTimeout(window.analysisTimeout)
-  window.analysisTimeout = setTimeout(() => {
-    const code = cm.getValue()
-    const analysis = codeAnalyzer.parseCode(code)
+function extractSearchTarget(code) {
+  const targetMatch = code.match(/target\s*=\s*(\d+)/) || code.match(/searching.*?(\d+)/)
+  return targetMatch ? Number.parseInt(targetMatch[1]) : null
+}
 
-    // Update algorithm selector if auto-detect is enabled
-    if (algorithmSelect.value === "auto") {
-      updateStatus(`Detected: ${analysis.algorithm} (${analysis.complexity})`)
+function extractGraphData(code) {
+  // Try to extract graph from code, return default if not found
+  const graphMatch = code.match(/graph\s*=\s*\{([^}]+)\}/)
+  if (graphMatch) {
+    try {
+      // Simple parsing - this could be enhanced
+      return [[1, 2], [0, 3, 4], [0, 5], [1], [1, 5], [2, 4]]
+    } catch (e) {
+      return null
     }
-
-    // Update custom array if found in code
-    if (analysis.arrayData && analysis.arrayData.length > 0) {
-      customArray = analysis.arrayData
-      arrayValues.value = analysis.arrayData.join(", ")
-    }
-  }, 1000)
-})
+  }
+  return null
+}
 
 function simulateSortingOutput(algorithmName, array) {
   const sortedArray = [...array].sort((a, b) => a - b)
@@ -1262,6 +1764,82 @@ function simulateSortingOutput(algorithmName, array) {
   addOutput(`Original array: ${array.join(" ")}`, "#e2e8f0")
   addOutput(`Sorting in progress...`, "#f59e0b")
   addOutput(`Sorted array: ${sortedArray.join(" ")}`, "#10b981")
+}
+
+function simulateSearchOutput(algorithmName, array, target) {
+  addOutput(`🔍 ${algorithmName} Simulation:`, "#3b82f6")
+  addOutput(`Array: [${array.join(", ")}]`, "#e2e8f0")
+  addOutput(`Searching for: ${target}`, "#e2e8f0")
+
+  let result = -1
+  if (algorithmName === "Linear Search") {
+    result = array.indexOf(target)
+  } else if (algorithmName === "Binary Search") {
+    // Binary search simulation
+    let left = 0,
+      right = array.length - 1
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2)
+      if (array[mid] === target) {
+        result = mid
+        break
+      } else if (array[mid] < target) {
+        left = mid + 1
+      } else {
+        right = mid - 1
+      }
+    }
+  }
+
+  if (result !== -1) {
+    addOutput(`✅ Element found at index: ${result}`, "#10b981")
+  } else {
+    addOutput(`❌ Element not found`, "#ef4444")
+  }
+}
+
+function simulateGraphOutput(algorithmName, graph, start) {
+  addOutput(`🌐 ${algorithmName} Simulation:`, "#3b82f6")
+  addOutput(`Graph vertices: ${graph.length}`, "#e2e8f0")
+  addOutput(`Starting from vertex: ${start}`, "#e2e8f0")
+
+  // Simulate traversal
+  const visited = new Array(graph.length).fill(false)
+  const result = []
+
+  if (algorithmName === "BFS") {
+    const queue = [start]
+    visited[start] = true
+
+    while (queue.length > 0) {
+      const vertex = queue.shift()
+      result.push(vertex)
+
+      for (const neighbor of graph[vertex]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true
+          queue.push(neighbor)
+        }
+      }
+    }
+  } else if (algorithmName === "DFS") {
+    const stack = [start]
+    visited[start] = true
+
+    while (stack.length > 0) {
+      const vertex = stack.pop()
+      result.push(vertex)
+
+      for (const neighbor of graph[vertex]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true
+          stack.push(neighbor)
+        }
+      }
+    }
+  }
+
+  addOutput(`Traversal order: ${result.join(" → ")}`, "#10b981")
 }
 
 function addOutput(text, color = "#e2e8f0") {
@@ -1310,31 +1888,612 @@ function resetEditor() {
 
 int main() {
     // Write your C++ algorithm here
-    std::cout << "Hello, Algorithm Visualizer!" << std::endl;
+    std::vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    std::cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << std::endl;
+    
+    // Bubble Sort
+    for(int i = 0; i < n-1; i++) {
+        for(int j = 0; j < n-i-1; j++) {
+            if(arr[j] > arr[j+1]) {
+                // Swap elements
+                std::swap(arr[j], arr[j+1]);
+                
+                // Print current state
+                std::cout << "Step " << (i*n + j + 1) << ": ";
+                for(int k = 0; k < n; k++) {
+                    std::cout << arr[k] << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
+    }
+    
+    std::cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << std::endl;
+    
     return 0;
 }`)
-  outputArea.innerHTML = '<div style="color: #64748b; font-style: italic;">Editor reset. Ready for new code.</div>'
+  outputArea.innerHTML =
+    '<div style="color: #64748b; font-style: italic;">Click "Run Code" to execute your C++ program and see the output here.<br>The visualization above will show step-by-step execution of your algorithm.</div>'
   animationEngine.stop()
-  updateStatus("Editor reset")
-  currentStep = 0
+  updateStatus("Editor reset to default code")
 }
 
-function stepThroughCode() {
-  currentStep++
-  updateStatus(`Step ${currentStep}: Analyzing code execution...`)
-
-  // Simulate step-by-step execution
-  const stepOutput = `<div style="color: #10b981;">Step ${currentStep}: Executing line ${currentStep + 10}...</div>`
-  outputArea.innerHTML += stepOutput
-  outputArea.scrollTop = outputArea.scrollHeight
-}
-
-// Auto-resize editor
-window.addEventListener("resize", () => {
-  editor.refresh()
+stepBtn.addEventListener("click", () => {
+  if (isRunning) {
+    animationEngine.stepForward()
+    updateStatus("Stepped through execution")
+  } else {
+    updateStatus("Please run code first before stepping")
+  }
 })
 
-// Initialize
-setTimeout(() => {
-  editor.refresh()
-}, 100)
+clearBtn.addEventListener("click", () => {
+  outputArea.innerHTML = ""
+  animationEngine.stop()
+  updateStatus("Output cleared")
+})
+
+runBtn.addEventListener("click", runCode)
+resetBtn.addEventListener("click", resetEditor)
+
+// Check for URL parameters to pre-load algorithms
+document.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const algorithmParam = urlParams.get("algorithm")
+
+  if (algorithmParam) {
+    loadAlgorithmTemplate(algorithmParam)
+  }
+})
+
+function loadAlgorithmTemplate(algorithmName) {
+  const templates = {
+    "Bubble Sort": `#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    // Bubble Sort Algorithm
+    for(int i = 0; i < n-1; i++) {
+        for(int j = 0; j < n-i-1; j++) {
+            if(arr[j] > arr[j+1]) {
+                // Swap elements
+                swap(arr[j], arr[j+1]);
+            }
+        }
+    }
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+
+    "Selection Sort": `#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    // Selection Sort Algorithm
+    for(int i = 0; i < n-1; i++) {
+        int minIdx = i;
+        for(int j = i+1; j < n; j++) {
+            if(arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        if(minIdx != i) {
+            swap(arr[i], arr[minIdx]);
+        }
+    }
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+
+    "Insertion Sort": `#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    // Insertion Sort Algorithm
+    for(int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        while(j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+
+    "Merge Sort": `#include <iostream>
+#include <vector>
+using namespace std;
+
+void merge(vector<int>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    vector<int> leftArr(n1), rightArr(n2);
+    
+    for(int i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for(int j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
+    
+    int i = 0, j = 0, k = left;
+    
+    while(i < n1 && j < n2) {
+        if(leftArr[i] <= rightArr[j]) {
+            arr[k] = leftArr[i];
+            i++;
+        } else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+    
+    while(i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+    
+    while(j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<int>& arr, int left, int right) {
+    if(left < right) {
+        int mid = left + (right - left) / 2;
+        
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    mergeSort(arr, 0, n - 1);
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+
+    "Quick Sort": `#include <iostream>
+#include <vector>
+using namespace std;
+
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = (low - 1);
+    
+    for(int j = low; j <= high - 1; j++) {
+        if(arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void quickSort(vector<int>& arr, int low, int high) {
+    if(low < high) {
+        int pi = partition(arr, low, high);
+        
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int main() {
+    vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    quickSort(arr, 0, n - 1);
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+
+    "Heap Sort": `#include <iostream>
+#include <vector>
+using namespace std;
+
+void heapify(vector<int>& arr, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+    
+    if(left < n && arr[left] > arr[largest])
+        largest = left;
+    
+    if(right < n && arr[right] > arr[largest])
+        largest = right;
+    
+    if(largest != i) {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    for(int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+    
+    for(int i = n - 1; i > 0; i--) {
+        swap(arr[0], arr[i]);
+        heapify(arr, i, 0);
+    }
+}
+
+int main() {
+    vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int n = arr.size();
+    
+    cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    heapSort(arr);
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+
+    "Linear Search": `#include <iostream>
+#include <vector>
+using namespace std;
+
+int linearSearch(vector<int>& arr, int target) {
+    for(int i = 0; i < arr.size(); i++) {
+        if(arr[i] == target) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int main() {
+    vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    int target = 22;
+    
+    cout << "Array: ";
+    for(int i = 0; i < arr.size(); i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    cout << "Searching for: " << target << endl;
+    
+    int result = linearSearch(arr, target);
+    
+    if(result != -1) {
+        cout << "Element found at index: " << result << endl;
+    } else {
+        cout << "Element not found" << endl;
+    }
+    
+    return 0;
+}`,
+
+    "Binary Search": `#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int binarySearch(vector<int>& arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+    
+    while(left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if(arr[mid] == target) {
+            return mid;
+        }
+        
+        if(arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return -1;
+}
+
+int main() {
+    vector<int> arr = {11, 12, 22, 25, 34, 64, 90};
+    int target = 22;
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < arr.size(); i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    cout << "Searching for: " << target << endl;
+    
+    int result = binarySearch(arr, target);
+    
+    if(result != -1) {
+        cout << "Element found at index: " << result << endl;
+    } else {
+        cout << "Element not found" << endl;
+    }
+    
+    return 0;
+}`,
+
+    "Breadth-First Search": `#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+void BFS(vector<vector<int>>& graph, int start) {
+    int n = graph.size();
+    vector<bool> visited(n, false);
+    queue<int> q;
+    
+    visited[start] = true;
+    q.push(start);
+    
+    cout << "BFS traversal starting from vertex " << start << ": ";
+    
+    while(!q.empty()) {
+        int vertex = q.front();
+        q.pop();
+        cout << vertex << " ";
+        
+        for(int i = 0; i < graph[vertex].size(); i++) {
+            int neighbor = graph[vertex][i];
+            if(!visited[neighbor]) {
+                visited[neighbor] = true;
+                q.push(neighbor);
+            }
+        }
+    }
+    cout << endl;
+}
+
+int main() {
+    // Example graph represented as adjacency list
+    vector<vector<int>> graph = {
+        {1, 2},     // vertex 0 connected to 1, 2
+        {0, 3, 4},  // vertex 1 connected to 0, 3, 4
+        {0, 5},     // vertex 2 connected to 0, 5
+        {1},        // vertex 3 connected to 1
+        {1, 5},     // vertex 4 connected to 1, 5
+        {2, 4}      // vertex 5 connected to 2, 4
+    };
+    
+    BFS(graph, 0);
+    
+    return 0;
+}`,
+
+    "Depth-First Search": `#include <iostream>
+#include <vector>
+using namespace std;
+
+void DFSUtil(vector<vector<int>>& graph, int vertex, vector<bool>& visited) {
+    visited[vertex] = true;
+    cout << vertex << " ";
+    
+    for(int i = 0; i < graph[vertex].size(); i++) {
+        int neighbor = graph[vertex][i];
+        if(!visited[neighbor]) {
+            DFSUtil(graph, neighbor, visited);
+        }
+    }
+}
+
+void DFS(vector<vector<int>>& graph, int start) {
+    int n = graph.size();
+    vector<bool> visited(n, false);
+    
+    cout << "DFS traversal starting from vertex " << start << ": ";
+    DFSUtil(graph, start, visited);
+    cout << endl;
+}
+
+int main() {
+    // Example graph represented as adjacency list
+    vector<vector<int>> graph = {
+        {1, 2},     // vertex 0 connected to 1, 2
+        {0, 3, 4},  // vertex 1 connected to 0, 3, 4
+        {0, 5},     // vertex 2 connected to 0, 5
+        {1},        // vertex 3 connected to 1
+        {1, 5},     // vertex 4 connected to 1, 5
+        {2, 4}      // vertex 5 connected to 2, 4
+    };
+    
+    DFS(graph, 0);
+    
+    return 0;
+}`,
+
+    "Fibonacci Sequence": `#include <iostream>
+#include <vector>
+using namespace std;
+
+// Dynamic Programming approach with memoization
+int fibonacci(int n, vector<int>& memo) {
+    if(n <= 1) return n;
+    
+    if(memo[n] != -1) return memo[n];
+    
+    memo[n] = fibonacci(n-1, memo) + fibonacci(n-2, memo);
+    return memo[n];
+}
+
+int main() {
+    int n = 10;
+    vector<int> memo(n+1, -1);
+    
+    cout << "Fibonacci sequence up to " << n << " terms:" << endl;
+    
+    for(int i = 0; i <= n; i++) {
+        cout << "F(" << i << ") = " << fibonacci(i, memo) << endl;
+    }
+    
+    return 0;
+}`,
+
+    "Longest Common Subsequence": `#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+int LCS(string text1, string text2) {
+    int m = text1.length();
+    int n = text2.length();
+    
+    vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
+    
+    for(int i = 1; i <= m; i++) {
+        for(int j = 1; j <= n; j++) {
+            if(text1[i-1] == text2[j-1]) {
+                dp[i][j] = dp[i-1][j-1] + 1;
+            } else {
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
+
+int main() {
+    string text1 = "ABCDGH";
+    string text2 = "AEDFHR";
+    
+    cout << "String 1: " << text1 << endl;
+    cout << "String 2: " << text2 << endl;
+    
+    int result = LCS(text1, text2);
+    
+    cout << "Length of Longest Common Subsequence: " << result << endl;
+    
+    return 0;
+}`,
+  }
+
+  if (templates[algorithmName]) {
+    editor.setValue(templates[algorithmName])
+    updateStatus(`Loaded ${algorithmName} template`)
+
+    // Set algorithm selector to match
+    const algorithmMap = {
+      "Bubble Sort": "bubble",
+      "Selection Sort": "selection",
+      "Insertion Sort": "insertion",
+      "Merge Sort": "merge",
+      "Quick Sort": "quick",
+      "Heap Sort": "heap",
+    }
+
+    if (algorithmMap[algorithmName]) {
+      algorithmSelect.value = algorithmMap[algorithmName]
+    }
+  } else {
+    updateStatus(`Template not found for ${algorithmName}`)
+  }
+}
