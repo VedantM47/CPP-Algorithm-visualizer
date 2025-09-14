@@ -76,23 +76,32 @@ class CodeAnalyzer {
 
   extractArrayData(code) {
     const arrayPatterns = [
+      /vector<\w+>\s+\w+\s*=\s*\{([^}]+)\}/g, // vector<int> arr = {1, 2, 3, 4}
+      /\w+\[\]\s*=\s*\{([^}]+)\}/g, // int arr[] = {1, 2, 3, 4}
+      /\w+\s*=\s*\{([^}]+)\}/g, // arr = {1, 2, 3, 4}
       /\{([^}]+)\}/g, // {1, 2, 3, 4}
-      /arr.*=.*\[([^\]]+)\]/g, // arr = [1, 2, 3, 4]
-      /vector<int>.*\{([^}]+)\}/g, // vector<int> arr = {1, 2, 3, 4}
     ]
 
     for (const pattern of arrayPatterns) {
+      pattern.lastIndex = 0 // Reset regex state
       const match = pattern.exec(code)
       if (match) {
+        console.log("[v0] Array match found:", match[1])
         const values = match[1]
           .split(",")
-          .map((v) => Number.parseInt(v.trim()))
-          .filter((v) => !isNaN(v))
+          .map((v) => {
+            const num = Number.parseInt(v.trim())
+            return isNaN(num) ? null : num
+          })
+          .filter((v) => v !== null)
+
         if (values.length > 0) {
+          console.log("[v0] Extracted array values:", values)
           return values
         }
       }
     }
+    console.log("[v0] No array data found in code")
     return null
   }
 
@@ -1739,8 +1748,17 @@ function extractCodeLines(code) {
 }
 
 function extractSearchTarget(code) {
-  const targetMatch = code.match(/target\s*=\s*(\d+)/) || code.match(/searching.*?(\d+)/)
-  return targetMatch ? Number.parseInt(targetMatch[1]) : null
+  const targetPatterns = [/target\s*=\s*(\d+)/, /int\s+target\s*=\s*(\d+)/, /search.*?(\d+)/i, /find.*?(\d+)/i]
+
+  for (const pattern of targetPatterns) {
+    const match = code.match(pattern)
+    if (match) {
+      console.log("[v0] Target found:", match[1])
+      return Number.parseInt(match[1])
+    }
+  }
+  console.log("[v0] No target found, using default")
+  return null
 }
 
 function extractGraphData(code) {
@@ -1767,32 +1785,13 @@ function simulateSortingOutput(algorithmName, array) {
 }
 
 function simulateSearchOutput(algorithmName, array, target) {
-  addOutput(`🔍 ${algorithmName} Simulation:`, "#3b82f6")
-  addOutput(`Array: [${array.join(", ")}]`, "#e2e8f0")
-  addOutput(`Searching for: ${target}`, "#e2e8f0")
+  addOutput(`${algorithmName} Simulation:`, "#3b82f6")
+  addOutput(`Array: [${array.join(", ")}]`, "#64748b")
+  addOutput(`Searching for: ${target}`, "#64748b")
 
-  let result = -1
-  if (algorithmName === "Linear Search") {
-    result = array.indexOf(target)
-  } else if (algorithmName === "Binary Search") {
-    // Binary search simulation
-    let left = 0,
-      right = array.length - 1
-    while (left <= right) {
-      const mid = Math.floor((left + right) / 2)
-      if (array[mid] === target) {
-        result = mid
-        break
-      } else if (array[mid] < target) {
-        left = mid + 1
-      } else {
-        right = mid - 1
-      }
-    }
-  }
-
-  if (result !== -1) {
-    addOutput(`✅ Element found at index: ${result}`, "#10b981")
+  const index = array.indexOf(target)
+  if (index !== -1) {
+    addOutput(`✅ Element found at index: ${index}`, "#10b981")
   } else {
     addOutput(`❌ Element not found`, "#ef4444")
   }
